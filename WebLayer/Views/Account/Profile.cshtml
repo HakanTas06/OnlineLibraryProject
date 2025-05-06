@@ -1,0 +1,63 @@
+﻿@model UserViewModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white text-center">
+                <h4>Profil Bilgileri</h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Message"]</div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Kullanıcı Adı:</strong></label>
+                    <p class="form-control-plaintext">@Model.Username</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>İsim:</strong></label>
+                    <p class="form-control-plaintext">@Model.Name</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Soyisim:</strong></label>
+                    <p class="form-control-plaintext">@Model.Surname</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>E-posta:</strong></label>
+                    <p class="form-control-plaintext">@Model.Email</p>
+                </div>
+
+                <hr class="my-4" />
+
+                <h5 class="text-center mb-3">İstatistiklerim</h5>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <p><strong>Toplam Ödünç Alınan Kitap Sayısı:</strong> @Model.TotalBorrows</p>
+                        <p><strong>İade Edilen Kitap Sayısı:</strong> @Model.ReturnedBorrows</p>
+                        <p><strong>Zamanında İade Edilen Kitap Sayısı:</strong> @Model.OnTimeReturns</p>
+                        <p>
+                            <strong>Borç:</strong>
+                            @if (Model.Debt > 0)
+                            {
+                                <span class="badge bg-danger">@Model.Debt TL</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Borç Yok</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="/Book/Index" class="btn btn-secondary">Geri Dön</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,149 @@
+﻿@model List<BookViewModel>
+
+@if (TempData["WelcomeMessage"] != null)
+{
+    <div class="alert alert-warning" role="alert">
+        @TempData["WelcomeMessage"]
+    </div>
+}
+
+@if (ViewBag.BorrowedBooksRanking != null)
+{
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-success text-white text-center py-2">
+            <h5 class="fw-semibold mb-0 text-white-bright">En Çok Ödünç Alınan 3 Kitap</h5>
+        </div>
+        <div class="card-body p-3">
+            <ul class="list-group list-group-flush">
+                @foreach (var ranking in ViewBag.BorrowedBooksRanking)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-light text-muted-custom">
+                        <span>@ranking.Split(" - ")[0] - @ranking.Split(" - ")[1]</span> <!-- Kitap - yazarı -->
+                        <span class="badge bg-warning text-dark rounded-pill">@ranking.Split(" - ")[2]</span> <!-- 2- Ödünç alma-->
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0 text-white-bright">Kitap Listesi</h4>
+        @if (User.IsInRole("Admin"))
+        {
+            <a href="/Book/Add" class="btn btn-success btn-sm btn-animated">Yeni Kitap Ekle</a>
+        }
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @foreach (var book in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm book-card">
+                        @if (!string.IsNullOrEmpty(book.ImagePath))
+                        {
+                            <a href="/Book/Details/@book.Id"><img src="@book.ImagePath" class="card-img-top" alt="@book.Title" style="height: 200px; object-fit: cover;" /></a>
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <span class="text-muted">Resim yok</span>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="/Book/Details/@book.Id" class="text-decoration-none text-dark">@book.Title</a>
+                            </h5>
+                            <p class="card-text"><strong>Yazar:</strong> @book.Author</p>
+                            <p class="card-text"><strong>Kategori:</strong> @book.CategoryName</p>
+                            <p class="card-text">
+                                <strong>Mevcut mu?:</strong>
+                                <span class="badge @(book.IsAvailable ? "bg-success" : "bg-danger")">
+                                    @(book.IsAvailable ? "Evet" : "Hayır")
+                                </span>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 text-center">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a href="/Book/Edit/@book.Id" class="btn btn-warning btn-sm btn-animated">Düzenle</a>
+                                <a href="/Book/Delete/@book.Id" class="btn btn-danger btn-sm btn-animated">Sil</a>
+                            }
+                            @if (book.IsAvailable)
+                            {
+                                <form asp-controller="Borrow" asp-action="BorrowBook" method="get" style="display:inline;">
+                                    <input type="hidden" name="bookId" value="@book.Id" />
+                                    <button type="submit" class="btn btn-success btn-sm btn-animated">Ödünç Al</button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .list-group-item {
+        border: none;
+        background-color: #e9ecef;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .list-group-item:hover {
+        background-color: #dee2e6;
+        transform: translateY(-2px);
+    }
+
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.5em 1em;
+    }
+
+    .text-white-bright {
+        color: #f8f9fa;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .text-muted-custom {
+        color: #6c757d;
+    }
+
+    .book-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-animated {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-animated:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-success.btn-animated:hover {
+        background-color: #28a745;
+    }
+
+    .btn-warning.btn-animated:hover {
+        background-color: #e0a800;
+    }
+
+    .btn-danger.btn-animated:hover {
+        background-color: #c82333;
+    }
+</style>

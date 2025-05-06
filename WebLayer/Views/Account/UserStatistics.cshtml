@@ -1,0 +1,48 @@
+﻿@model List<Business.UserBorrowStatistics>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white text-center">
+        <h4>Kullanıcı Ödünç Alma İstatistikleri</h4>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Kullanıcı Adı</th>
+                        <th>Toplam Ödünç Alınan</th>
+                        <th>İade Edilen</th>
+                        <th>Zamanında İade Edilen</th>
+                        <th>Borç (TL)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var statistics in Model)
+                    {
+                        <tr>
+                            <td>@statistics.Username</td>
+                            <td>@statistics.TotalBorrows</td>
+                            <td>@statistics.ReturnedBorrows</td>
+                            <td>@statistics.OnTimeReturns</td>
+                            <td>
+                                @if (statistics.Debt > 0)
+                                {
+                                    <span class="badge bg-danger">@statistics.Debt TL</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Borç Yok</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-info">Kullanıcı istatistiği bulunmamaktadır.</div>
+        }
+    </div>
+</div>

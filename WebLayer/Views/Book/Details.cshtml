@@ -1,0 +1,233 @@
+﻿@model BookViewModel
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">@Model.Title</h4>
+            <p class="mb-0">Ortalama Puan: @Model.AverageRating.ToString("F1") / 5</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <img src="@Model.ImagePath" alt="@Model.Title" class="img-fluid rounded mb-3 book-image" style="max-width: 100%; height: auto;" />
+                    }
+                    else
+                    {
+                        <p class="text-muted">Resim bulunamadı.</p>
+                    }
+                </div>
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-4">Yazar:</dt>
+                        <dd class="col-sm-8">@Model.Author</dd>
+                        <dt class="col-sm-4">Kategori:</dt>
+                        <dd class="col-sm-8">@Model.CategoryName</dd>
+                        <dt class="col-sm-4">Mevcut mu?:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge @(Model.IsAvailable ? "bg-success" : "bg-danger")">
+                                @(Model.IsAvailable ? "Evet" : "Hayır")
+                            </span>
+                        </dd>
+                    </dl>
+                    <div class="text-center">
+                        @if (Model.IsAvailable)
+                        {
+                            <form asp-controller="Borrow" asp-action="BorrowBook" method="post" style="display:inline;">
+                                <input type="hidden" name="Id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-success btn-animated">Ödünç Al</button>
+                            </form>
+                        }
+                        <a href="/Book/Index" class="btn btn-secondary ms-2 btn-animated">Geri Dön</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-primary text-white">
+            <h5>Yorumlar</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Comments.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <li class="list-group-item d-flex flex-wrap align-items-start comment-card">
+                            <div class="comment-text flex-grow-1 me-2">
+                                <strong>@comment.Username</strong> (@comment.CommentDate.ToShortDateString()):
+                                <p class="comment-content">@comment.Content</p>
+                                <div class="star-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span class="fa fa-star @(i <= comment.Rating ? "checked" : "")"></span>
+                                    }
+                                </div>
+                            </div>
+                            @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || comment.Username == User.Identity.Name))
+                            {
+                                <div class="comment-actions ms-2">
+                                    <form asp-action="DeleteComment" method="post" style="display:inline;">
+                                        <input type="hidden" name="commentId" value="@comment.Id" />
+                                        <input type="hidden" name="bookId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm btn-animated">Sil</button>
+                                    </form>
+                                </div>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">Henüz yorum yok.</p>
+            }
+        </div>
+    </div>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-success text-white">
+                <h5>Yorum Ekle</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="AddComment" method="post">
+                    <input type="hidden" name="bookId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label">Yorumunuz (maks. 200 karakter):</label>
+                        <textarea name="content" class="form-control comment-textarea" rows="3" maxlength="200" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Puan (1-5):</label>
+                        <select name="rating" class="form-control" required>
+                            <option value="">Puan seçin</option>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-animated">Yorum Ekle</button>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <p class="text-muted">Yorum yapmak için <a asp-controller="Account" asp-action="Login">giriş yapın</a>.</p>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .comment-textarea {
+        resize: vertical; /* Sadece dikey büyüme */
+        overflow-y: auto; /* Taşıyorsa kaydırma çubuğu */
+        max-height: 100px;
+        width: 100%;
+        box-sizing: border-box;
+        word-wrap: break-word;
+    }
+
+    .comment-text {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .comment-content {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        max-width: 100%;
+        margin: 0;
+        overflow: hidden;
+        line-height: 1.5;
+    }
+
+    .comment-actions {
+        flex-shrink: 0; /* Küçülmez. */
+        align-self: flex-start;
+    }
+
+    .list-group-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px;
+        overflow: visible;
+    }
+
+    .star-rating .fa-star {
+        color: #ddd;
+        font-size: 1.2rem;
+    }
+
+    .star-rating .checked {
+        color: #f1c40f;
+    }
+
+    .book-image {
+        transition: transform 0.3s ease;
+    }
+
+    .book-image:hover {
+        transform: scale(1.05);
+    }
+
+    .comment-card {
+        transition: background-color 0.3s ease;
+    }
+
+    .comment-card:hover {
+        background-color: #f8f9fa;
+    }
+
+    .btn-animated {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-animated:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-success.btn-animated:hover {
+        background-color: #28a745;
+    }
+
+    .btn-secondary.btn-animated:hover {
+        background-color: #6c757d;
+    }
+
+    .btn-primary.btn-animated:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-danger.btn-animated:hover {
+        background-color: #c82333;
+    }
+    .card + .card {
+        margin-top: 2rem;
+    }
+    .card-header.bg-success {
+        background-color: #28a745 !important;
+    }
+    .card-header.bg-primary {
+        background-color: #007bff !important;
+    }
+    .form-label {
+        font-weight: 500;
+        color: #333;
+    }
+    .btn-primary.btn-animated {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />

@@ -1,0 +1,26 @@
+﻿@model BorrowViewModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white text-center">
+                <h4>Kitap Ödünç Al</h4>
+            </div>
+            <div class="card-body">
+                @if (TempData["BorrowInfo"] != null)
+                {
+                    <div class="alert alert-info">@TempData["BorrowInfo"]</div>
+                }
+                <p><strong>Kitap:</strong> @Model.BookTitle</p>
+                <p>Bu kitabı ödünç almak istediğinizden emin misiniz?</p>
+                <form asp-action="BorrowBook" method="post">
+                    <input type="hidden" name="Id" value="@Model.Id" />
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success">Ödünç Al</button>
+                        <a href="/Book/Index" class="btn btn-secondary ms-2">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

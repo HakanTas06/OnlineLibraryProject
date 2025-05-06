@@ -1,0 +1,57 @@
+﻿@model List<UserViewModel>
+
+@{
+    ViewData["Title"] = "Kullanıcı Listesi";
+}
+
+<h2>Kullanıcı Listesi</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table table-striped"> @* çizgili görünü için *@
+    <thead>
+        <tr>
+            <th>Kullanıcı Adı</th>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>E-posta</th>
+            <th>Borç (TL)</th>
+            <th>E-posta Doğrulandı mı?</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Username</td>
+                <td>@user.Name</td>
+                <td>@user.Surname</td>
+                <td>@user.Email</td>
+                <td>@user.Debt.ToString("F2")</td> @* 2 ondalık basamak *@
+                <td>@(user.IsEmailVerified ? "Evet" : "Hayır")</td>
+                <td>
+                    @if (user.Debt > 0)
+                    {
+                        <form asp-action="ClearDebt" asp-controller="Account" method="post" style="display:inline;">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <button type="submit" class="btn btn-sm btn-warning"
+                                    onclick="return confirm('@user.Username kullanıcısının borcunu sıfırlamak istediğinize emin misiniz?');">
+                                Borcu Sıfırla
+                            </button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" asp-controller="Book" class="btn btn-secondary">Geri Dön</a>

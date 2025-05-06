@@ -1,0 +1,67 @@
+﻿@model List<BorrowViewModel>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-info text-white">
+        <h4>Ödünç Aldığım Kitaplar</h4>
+    </div>
+    <div class="card-body">
+        @if (TempData["OverdueWarning"] != null)
+        {
+            <div class="alert alert-danger">@TempData["OverdueWarning"]</div>
+        }
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">@TempData["Message"]</div>
+        }
+        
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Kitap Adı</th>
+                    <th>Ödünç Alma Tarihi</th>
+                    <th>İade Edilmesi Gereken Tarih</th>
+                    <th>İade Tarihi</th>
+                    <th>Durum</th>
+                    <th>Gecikme Günleri</th>
+                    <th>Ceza (TL)</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var borrow in Model)
+                {
+                    var isOverdue = borrow.OverdueDays > 0;
+                    <tr class="@(isOverdue ? "table-danger" : "")">
+                        <td>@borrow.BookTitle</td>
+                        <td>@borrow.BorrowDate.ToShortDateString()</td>
+                        <td>@borrow.DueDate.ToShortDateString()</td>
+                        <td>@(borrow.ReturnDate.HasValue ? borrow.ReturnDate.Value.ToShortDateString() : "İade Edilmedi")</td>
+                        <td>
+                            @if (isOverdue)
+                            {
+                                <span class="badge bg-danger">Gecikti</span>
+                            }
+                            else if (!borrow.ReturnDate.HasValue)
+                            {
+                                <span class="badge bg-warning">İade Bekleniyor</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">İade Edildi</span>
+                            }
+                        </td>
+                        <td>@(borrow.OverdueDays > 0 ? borrow.OverdueDays.ToString() : "Yok")</td>
+                        <td>@(borrow.Fine > 0 ? borrow.Fine.ToString("N2") : "0,00")</td>
+                        <td>
+                            @if (!borrow.ReturnDate.HasValue)
+                            {
+                                <a href="/Borrow/ReturnBook/@borrow.Id" class="btn btn-sm btn-danger">İade Et</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<a href="/Book/Index" class="btn btn-secondary mt-3">Kitap Listesine Dön</a>

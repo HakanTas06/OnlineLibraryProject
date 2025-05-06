@@ -1,0 +1,33 @@
+﻿@model BookViewModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-danger text-white text-center">
+                <h4>Kitap Sil</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-center">Aşağıdaki kitabı silmek istediğinizden emin misiniz?</p>
+                <dl class="row">
+                    <dt class="col-sm-4">Başlık:</dt>
+                    <dd class="col-sm-8">@Model.Title</dd>
+                    <dt class="col-sm-4">Yazar:</dt>
+                    <dd class="col-sm-8">@Model.Author</dd>
+                    <dt class="col-sm-4">Kategori:</dt>
+                    <dd class="col-sm-8">@Model.CategoryName</dd>
+                    <dt class="col-sm-4">Mevcut mu?</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge @(Model.IsAvailable ? "bg-success" : "bg-danger")">
+                            @(Model.IsAvailable ? "Evet" : "Hayır")
+                        </span>
+                    </dd>
+                </dl>
+                <form asp-action="DeleteConfirmed" method="post" class="text-center">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger">Sil</button>
+                    <a href="/Book/Index" class="btn btn-secondary ms-2">İptal</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

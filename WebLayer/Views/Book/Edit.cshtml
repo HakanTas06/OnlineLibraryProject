@@ -1,0 +1,102 @@
+﻿@using Entity
+@model BookViewModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-white text-center">
+                <h4>Kitap Düzenle</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label">Başlık</label>
+                        <input asp-for="Title" class="form-control" required />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Author" class="form-label">Yazar</label>
+                        <input asp-for="Author" class="form-control" required />
+                        <span asp-validation-for="Author" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="IsAvailable" class="form-label">Mevcut mu?</label>
+                        <div class="form-check">
+                            <input asp-for="IsAvailable" type="checkbox" class="form-check-input" />
+                            <label class="form-check-label">Evet</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="CategoryId" class="form-label">Kategori</label>
+                        <select name="CategoryId" class="form-select" required>
+                            @if (ViewBag.Categories != null)
+                            {
+                                @foreach (var category in (IEnumerable<Category>)ViewBag.Categories)
+                                {
+                                    if (category.Id == Model?.CategoryId)
+                                    {
+                                        <option value="@category.Id" selected>@category.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <option value="">Kategori bulunamadı</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ImageFile" class="form-label">Kitap Resmi</label>
+                        <input type="file" asp-for="ImageFile" class="form-control" accept="image/*" />
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <img src="@Model.ImagePath" alt="@Model.Title" class="img-thumbnail mt-2 book-image" style="max-width: 200px;" />
+                        }
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-animated">Kaydet</button>
+                        <a href="/Book/Index" class="btn btn-secondary ms-2 btn-animated">Geri Dön</a>
+                    </div>
+                    <div asp-validation-summary="All" class="text-danger mt-3"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .book-image {
+        transition: transform 0.3s ease;
+    }
+
+    .book-image:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-animated {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-animated:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-primary.btn-animated:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary.btn-animated:hover {
+        background-color: #6c757d;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

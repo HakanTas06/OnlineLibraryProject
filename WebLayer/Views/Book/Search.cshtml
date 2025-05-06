@@ -1,0 +1,177 @@
+﻿@model SearchViewModel
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white text-center py-3">
+        <h4 class="fw-bold mb-0" style="font-size: 1.6rem; letter-spacing: 1px;">Kitap Arama</h4>
+    </div>
+    <div class="card-body p-4">
+        <form asp-action="Search" method="post" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold text-muted">Kitap Adı</label>
+                <input type="text" name="SearchTitle" value="@Model.SearchTitle" class="form-control shadow-sm" placeholder="Kitap adını girin..." />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold text-muted">Yazar</label>
+                <input type="text" name="SearchAuthor" value="@Model.SearchAuthor" class="form-control shadow-sm" placeholder="Yazar adını girin..." />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-bold text-muted">Kategori</label>
+                <select name="SelectedCategoryId" class="form-select shadow-sm">
+                    <option value="">Tüm Kategoriler</option>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Id" selected="@(category.Id == Model.SelectedCategoryId)">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-primary w-100 shadow-sm search-btn btn-animated">
+                    <i class="fas fa-search me-2"></i>Ara
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Books.Any())
+{
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-header bg-info text-white py-2">
+            <h5 class="mb-0 fw-semibold">Sonuçlar</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                @foreach (var book in Model.Books)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm book-card">
+                            @if (!string.IsNullOrEmpty(book.ImagePath))
+                            {
+                                <img src="@book.ImagePath" class="card-img-top" alt="@book.Title" style="height: 200px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <span class="text-muted">Resim yok</span>
+                                </div>
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="/Book/Details/@book.Id" class="text-decoration-none text-dark">@book.Title</a>
+                                </h5>
+                                <p class="card-text"><strong>Yazar:</strong> @book.Author</p>
+                                <p class="card-text"><strong>Kategori:</strong> @book.CategoryName</p>
+                                <p class="card-text">
+                                    <strong>Mevcut mu?:</strong>
+                                    <span class="badge @(book.IsAvailable ? "bg-success" : "bg-danger")">
+                                        @(book.IsAvailable ? "Evet" : "Hayır")
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 text-center">
+                                @if (book.IsAvailable)
+                                {
+                                    <form asp-controller="Borrow" asp-action="BorrowBook" method="post" style="display:inline;">
+                                        <input type="hidden" name="Id" value="@book.Id" />
+                                        <button type="submit" class="btn btn-success btn-sm shadow-sm btn-animated">Ödünç Al</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrEmpty(Model.SearchTitle) || !string.IsNullOrEmpty(Model.SearchAuthor) || Model.SelectedCategoryId.HasValue)
+{
+    <div class="alert alert-warning mt-4 text-center shadow-sm">Aradığınız kriterlere uygun kitap bulunamadı.</div>
+}
+
+<div class="text-center mt-3">
+    <a href="/Book/Index" class="btn btn-outline-secondary shadow-sm btn-animated">Listeye Geri Dön</a>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        border-bottom: none;
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+    }
+
+    .search-btn {
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+        background-color: #0056b3;
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-secondary {
+        border-radius: 8px;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+    }
+
+    .badge {
+        padding: 0.4em 0.8em;
+        font-size: 0.85rem;
+    }
+
+    .book-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .book-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-animated {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-animated:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-success.btn-animated:hover {
+        background-color: #28a745;
+    }
+
+    .btn-outline-secondary.btn-animated:hover {
+        background-color: #6c757d;
+    }
+</style>
+
+@* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" /> *@

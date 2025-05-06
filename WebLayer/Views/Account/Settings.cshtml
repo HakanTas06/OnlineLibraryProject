@@ -1,0 +1,79 @@
+﻿@model UserViewModel
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white text-center">
+                <h4>Hesap Ayarları</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Settings" method="post">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label">Kullanıcı Adı</label>
+                        <input asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">İsim</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Surname" class="form-label">Soyisim</label>
+                        <input asp-for="Surname" class="form-control" />
+                        <span asp-validation-for="Surname" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">E-posta</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <hr class="my-4" /> <!--Yatay çizgi alt ve üstten boşluk bırakmak için-->
+
+                    <h5 class="text-center mb-3">Şifre Değiştir</h5>
+                    <div class="mb-3">
+                        <label asp-for="CurrentPassword" class="form-label">Mevcut Şifre</label>
+                        <input asp-for="CurrentPassword" class="form-control" placeholder="Mevcut şifrenizi girin" />
+                        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="NewPassword" class="form-label">Yeni Şifre</label>
+                        <input asp-for="NewPassword" class="form-control" placeholder="Yeni şifrenizi girin" />
+                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ConfirmNewPassword" class="form-label">Yeni Şifre Onayı</label>
+                        <input asp-for="ConfirmNewPassword" class="form-control" placeholder="Yeni şifreyi tekrar girin" />
+                        <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                    </div>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <p>@error.ErrorMessage</p>
+                            }
+                        </div>
+                    }
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <a href="/Book/Index" class="btn btn-secondary ms-2">Geri Dön</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

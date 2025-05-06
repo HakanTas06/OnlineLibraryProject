@@ -1,0 +1,51 @@
+﻿@using Entity
+@model Category
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-danger text-white text-center">
+                <h4>Silme İşlemi</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <strong>Uyarı!</strong> "<strong>@Model.Name</strong>"
+                    kategorisini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                </div>
+
+                <form method="post" asp-action="Delete" asp-route-id="@Model.Id">
+                    <div class="form-group mb-3">
+                        <label>Kategori Adı</label>
+                        <input type="text" class="form-control" value="@Model.Name" readonly />
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-danger btn-animated">Evet, Sil</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary ms-2 btn-animated">Hayır, İptal Et</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-animated {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-animated:hover {
+        transform: scale(1.05);
+    }
+
+    .btn-danger.btn-animated:hover {
+        background-color: #c82333;
+    }
+
+    .btn-secondary.btn-animated:hover {
+        background-color: #6c757d;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
